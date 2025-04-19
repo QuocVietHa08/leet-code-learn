@@ -1,3 +1,5 @@
+'use client';
+import { useState } from 'react';
 import { IconBrain, IconClock, IconCode, IconRocket } from '@tabler/icons-react';
 import {
   Button,
@@ -11,8 +13,44 @@ import {
   ThemeIcon,
   Title,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { useRouter } from 'next/navigation';
 
 export function LandingPage() {
+  const [input, setInput] = useState('');
+  const router = useRouter();
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    // Validate the URL format
+    if (!input.includes('leetcode.com/problems/')) {
+      notifications.show({
+        title: 'Invalid LeetCode URL format',
+        message: 'Please enter a valid LeetCode problem URL',
+        color: 'red',
+      })
+      return;
+    }
+
+    // Extract the problem name from the URL
+    const problemUrlParts = input.split('leetcode.com/problems/');
+    if (problemUrlParts.length < 2) {
+      notifications.show({
+        title: 'Invalid LeetCode URL format',
+        message: 'Please enter a valid LeetCode problem URL',
+        color: 'red',
+      })
+      return;
+    }
+
+    // Get the problem name and remove any trailing slashes or query parameters
+    const problemName = problemUrlParts[1].split('/')[0].split('?')[0];
+    
+    // Navigate to the solve page with the problem name
+    router.push(`/solve/${problemName}`)
+  };
   return (
     <>
       <div className="relative bg-gray-50 dark:bg-gray-800 pt-20 pb-20">
@@ -33,17 +71,23 @@ export function LandingPage() {
 
               <Group align="center" justify="center">
                 <Container w="100%" size="lg" py="xl" className="py-20">
-                    <Flex gap="xs" align="center" justify="center" className="w-full p-5 bg-white dark:bg-gray-800 rounded-md shadow-sm">
-                      <TextInput
-                        type="text"
-                        placeholder="Paste LeetCode problem link"
-                        className="w-[70%] rounded-md text-sm"
-                      />
-                      <Button
-                      >
-                       Solve
-                      </Button>
-                    </Flex>
+                  <Flex
+                    gap="xs"
+                    align="center"
+                    justify="center"
+                    className="w-full p-5 bg-white dark:bg-gray-800 rounded-md shadow-sm"
+                  >
+                    <TextInput
+                      type="text"
+                      placeholder="Paste LeetCode problem link"
+                      className="w-[70%] rounded-md text-sm"
+                      value={input}
+                      onChange={handleInputChange}
+                    />
+                    <Button onClick={handleSubmit}>
+                      Solve
+                    </Button>
+                  </Flex>
                 </Container>
               </Group>
             </div>
@@ -113,7 +157,7 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
       <Text fz="lg" fw={500} className="font-bold font-sans leading-tight" mt="sm">
         {title}
       </Text>
-      <Text  fz="sm" c="dimmed" mt="md" className="text-center">
+      <Text fz="sm" c="dimmed" mt="md" className="text-center">
         {description}
       </Text>
     </Flex>
