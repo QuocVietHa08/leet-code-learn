@@ -3,10 +3,11 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
+import './global.css'
 
 export const metadata = {
-  title: 'Mantine Next.js template',
-  description: 'I am using Mantine with Next.js!',
+  title: 'LeetCode Learn - Solve Coding Problems with AI Assistance',
+  description: 'Paste your LeetCode problem link and get instant solutions, explanations, and learning resources. Master algorithms and ace your technical interviews with LeetCode Learn.',
 };
 
 export default function RootLayout({ children }: { children: any }) {
