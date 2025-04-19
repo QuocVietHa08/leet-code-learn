@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
       }
     `;
 
-    // Use streaming for the OpenAI API response
-    const stream = await openai.chat.completions.create({
+    // Call OpenAI API for completion
+    const completion = await openai.chat.completions.create({
       messages: [
         {
           role: 'system',
@@ -64,34 +64,20 @@ export async function POST(request: NextRequest) {
       ],
       model: 'gpt-4o',
       response_format: { type: 'json_object' },
-      stream: true,
     });
     
-    // Create a TransformStream to send chunks to the client
-    const encoder = new TextEncoder();
+    // Get the response content
+    const responseContent = completion.choices[0].message.content;
     
-    // Create a ReadableStream from the OpenAI stream
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of stream) {
-          const content = chunk.choices[0]?.delta?.content || '';
-          if (content) {
-            controller.enqueue(encoder.encode(content));
-          }
-        }
-        controller.close();
-      },
-    });
+    if (!responseContent) {
+      throw new Error('No response from OpenAI');
+    }
     
-    return new NextResponse(readableStream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Transfer-Encoding': 'chunked',
-      },
-    });
-
-    // Note: This code is no longer used since we're using streaming
-    // It's replaced by the streaming implementation above
+    // Parse the JSON response
+    const solutionData = JSON.parse(responseContent);
+    
+    // Return the solution data as JSON
+    return NextResponse.json(solutionData);
   } catch (error) {
     // Log error for server-side debugging
     // console.error('Error generating solution:', error);
