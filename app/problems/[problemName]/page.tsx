@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Box, Code, Container, Grid, Loader, Paper, Skeleton, Tabs, Text, Title } from '@mantine/core';
+import { Container, Grid } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import { ProblemDescription } from '@/app/components/ProblemDescription';
+import { SolutionDisplay } from '@/app/components/SolutionDisplay';
 
 export default function SolvePage() {
   const params = useParams();
@@ -24,7 +26,6 @@ export default function SolvePage() {
       spaceComplexity: string;
     };
   } | null>(null);
-
 
   useEffect(() => {
     async function fetchSolution() {
@@ -70,227 +71,66 @@ export default function SolvePage() {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  // Mock problem data - in a real app, you would fetch this from an API
-  const [problemData] = useState({
-    id: '1768',
+  // Fetch problem data from API
+  const [problemData, setProblemData] = useState({
+    id: '',
     title: formattedProblemName,
-    difficulty: 'Easy',
-    description: `You are given two strings word1 and word2. Merge the strings by adding letters in alternating order, starting with word1. If a string is longer than the other, append the additional letters onto the end of the merged string.
-
-Return the merged string.`,
-    examples: [
-      {
-        input: 'word1 = "abc", word2 = "pqr"',
-        output: '"apbqcr"',
-        explanation:
-          'The merged string will be merged as so:\nword1:  a  b  c\nword2:    p  q  r\nmerged: a p b q c r',
-      },
-      {
-        input: 'word1 = "ab", word2 = "pqrs"',
-        output: '"apbqrs"',
-        explanation: 'Notice that as word2 is longer, "rs" is appended to the end.',
-      },
-    ],
+    difficulty: '',
+    content: '',
   });
+
+  const [problemLoading, setProblemLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProblemData() {
+      try {
+        setProblemLoading(true);
+        const response = await fetch(`/api/problem?problemName=${problemName}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch problem data');
+        }
+
+        const data = await response.json();
+        setProblemData(data);
+      } catch (error) {
+        // Log error to server logs instead of console
+        notifications.show({
+          title: 'Debug',
+          message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          color: 'red',
+        });
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to fetch problem data. Using default formatting.',
+          color: 'yellow',
+        });
+        // Fallback to just the formatted name if API fails
+        setProblemData((prev) => ({
+          ...prev,
+          title: formattedProblemName,
+        }));
+      } finally {
+        setProblemLoading(false);
+      }
+    }
+
+    if (problemName) {
+      fetchProblemData();
+    }
+  }, [problemName, formattedProblemName]);
+
+  console.log('Problem data:', problemData)
 
   return (
     <Container size="xl" py="xl" fluid mih="100vh">
       <Grid gutter="md">
-        {/* Left side - Problem Description */}
-        <Grid.Col span={{ base: 12, md: 5 }} mih="calc(100vh - 4rem)">
-          <Paper p="md" withBorder mih="calc(100vh - 4rem)">
-            <Title order={2} size="h3" mb="xs">
-              {problemData.id}. {problemData.title}
-            </Title>
-
-            <Text size="sm" fw={500} c="dimmed" mb="md">
-              Difficulty: {problemData.difficulty}
-            </Text>
-
-            <Text mb="lg" style={{ whiteSpace: 'pre-line' }}>
-              {problemData.description}
-            </Text>
-
-            <Title order={3} size="h5" mb="xs">
-              Examples:
-            </Title>
-
-            {problemData.examples.map((example, index) => (
-              <Paper key={index} p="sm" withBorder mb="md" bg="gray.0">
-                <Text fw={700}>Example {index + 1}:</Text>
-                <Text>
-                  <strong>Input:</strong> {example.input}
-                </Text>
-                <Text>
-                  <strong>Output:</strong> {example.output}
-                </Text>
-                {example.explanation && (
-                  <Text>
-                    <strong>Explanation:</strong> {example.explanation}
-                  </Text>
-                )}
-              </Paper>
-            ))}
-          </Paper>
+        <Grid.Col w="50%" span={{ base: 12, md: 5 }} mih="calc(100vh - 4rem)">
+          <ProblemDescription loading={problemLoading} problemData={problemData} />
         </Grid.Col>
 
-        {/* Right side - Solution */}
-        <Grid.Col span={{ base: 12, md: 7 }} mih="calc(100vh - 4rem)">
-          {loading ? (
-            <Paper p="md" withBorder>
-              <Tabs defaultValue="bruteForce">
-                <Tabs.List>
-                  <Tabs.Tab value="bruteForce">Brute Force Solution</Tabs.Tab>
-                  <Tabs.Tab value="optimized">Optimized Solution</Tabs.Tab>
-                </Tabs.List>
-
-                <Tabs.Panel value="bruteForce" pt="md">
-                  <Tabs defaultValue="explanation">
-                    <Tabs.List>
-                      <Tabs.Tab value="explanation">Explanation</Tabs.Tab>
-                      <Tabs.Tab value="solution">Code</Tabs.Tab>
-                      <Tabs.Tab value="complexity">Complexity</Tabs.Tab>
-                    </Tabs.List>
-
-                    <Tabs.Panel value="explanation" pt="md">
-                      <Paper p="md" withBorder>
-                        <Skeleton height={20} radius="xl" mb="md" />
-                        <Skeleton height={20} radius="xl" mb="md" width="90%" />
-                        <Skeleton height={20} radius="xl" mb="md" width="95%" />
-                        <Skeleton height={20} radius="xl" mb="md" width="85%" />
-                        <Skeleton height={20} radius="xl" width="70%" />
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="solution" pt="md">
-                      <Paper p="md" withBorder>
-                        <Skeleton height={200} radius="md" />
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="complexity" pt="md">
-                      <Paper p="md" withBorder>
-                        <Skeleton height={20} width="40%" radius="xl" mb="sm" />
-                        <Skeleton height={20} width="70%" radius="xl" mb="xl" />
-                        <Skeleton height={20} width="40%" radius="xl" mb="sm" />
-                        <Skeleton height={20} width="70%" radius="xl" />
-                      </Paper>
-                    </Tabs.Panel>
-                  </Tabs>
-                </Tabs.Panel>
-
-                <Tabs.Panel value="optimized" pt="md">
-                  <Tabs defaultValue="explanation">
-                    <Tabs.List>
-                      <Tabs.Tab value="explanation">Explanation</Tabs.Tab>
-                      <Tabs.Tab value="solution">Code</Tabs.Tab>
-                      <Tabs.Tab value="complexity">Complexity</Tabs.Tab>
-                    </Tabs.List>
-
-                    <Tabs.Panel value="explanation" pt="md">
-                      <Paper p="md" withBorder>
-                        <Box className="flex items-center justify-center">
-                          <Loader size="sm" />
-                          <Text ml="xs" size="sm" c="dimmed">Generating solution...</Text>
-                        </Box>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="solution" pt="md">
-                      <Paper p="md" withBorder>
-                        <Box className="flex items-center justify-center">
-                          <Loader size="sm" />
-                          <Text ml="xs" size="sm" c="dimmed">Generating solution...</Text>
-                        </Box>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="complexity" pt="md">
-                      <Paper p="md" withBorder>
-                        <Box className="flex items-center justify-center">
-                          <Loader size="sm" />
-                          <Text ml="xs" size="sm" c="dimmed">Generating solution...</Text>
-                        </Box>
-                      </Paper>
-                    </Tabs.Panel>
-                  </Tabs>
-                </Tabs.Panel>
-              </Tabs>
-            </Paper>
-          ) : solution ?  (
-            <Paper mih="calc(100vh-4rem)" p="md" withBorder>
-              <Tabs defaultValue="bruteForce">
-                <Tabs.List mih="calc(100vh-4rem)">
-                  <Tabs.Tab value="bruteForce">Brute Force Solution</Tabs.Tab>
-                  <Tabs.Tab value="optimized">Optimized Solution</Tabs.Tab>
-                </Tabs.List>
-
-                <Tabs.Panel value="bruteForce" pt="md">
-                  <Tabs defaultValue="explanation">
-                    <Tabs.List>
-                      <Tabs.Tab value="explanation">Explanation</Tabs.Tab>
-                      <Tabs.Tab value="solution">Code</Tabs.Tab>
-                      <Tabs.Tab value="complexity">Complexity</Tabs.Tab>
-                    </Tabs.List>
-
-                    <Tabs.Panel value="explanation" pt="md">
-                      <Paper p="md" withBorder>
-                        <Text>{solution.bruteForce.explanation}</Text>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="solution" pt="md">
-                      <Paper p="md" withBorder>
-                        <Code block>{solution.bruteForce.code}</Code>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="complexity" pt="md">
-                      <Paper p="md" withBorder>
-                        <Text fw={700}>Time Complexity</Text>
-                        <Text mb="md">{solution.bruteForce.timeComplexity}</Text>
-                        <Text fw={700}>Space Complexity</Text>
-                        <Text>{solution.bruteForce.spaceComplexity}</Text>
-                      </Paper>
-                    </Tabs.Panel>
-                  </Tabs>
-                </Tabs.Panel>
-
-                <Tabs.Panel value="optimized" pt="md">
-                  <Tabs defaultValue="explanation">
-                    <Tabs.List>
-                      <Tabs.Tab value="explanation">Explanation</Tabs.Tab>
-                      <Tabs.Tab value="solution">Code</Tabs.Tab>
-                      <Tabs.Tab value="complexity">Complexity</Tabs.Tab>
-                    </Tabs.List>
-
-                    <Tabs.Panel value="explanation" pt="md">
-                      <Paper p="md" withBorder>
-                        <Text>{solution.optimized.explanation}</Text>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="solution" pt="md">
-                      <Paper p="md" withBorder>
-                        <Code block>{solution.optimized.code}</Code>
-                      </Paper>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="complexity" pt="md">
-                      <Paper p="md" withBorder>
-                        <Text fw={700}>Time Complexity</Text>
-                        <Text mb="md">{solution.optimized.timeComplexity}</Text>
-                        <Text fw={700}>Space Complexity</Text>
-                        <Text>{solution.optimized.spaceComplexity}</Text>
-                      </Paper>
-                    </Tabs.Panel>
-                  </Tabs>
-                </Tabs.Panel>
-              </Tabs>
-            </Paper>
-          ) : (
-            <Text>Failed to generate solution. Please try again.</Text>
-          )}
+        <Grid.Col w="50%" span={{ base: 12, md: 7 }} mih="calc(100vh - 4rem)">
+          <SolutionDisplay loading={loading} solution={solution} />
         </Grid.Col>
       </Grid>
     </Container>

@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "analyze": "ANALYZE=true next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "npm run eslint && npm run stylelint",
@@ -20,6 +19,7 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
+    "@codingsnack/leetcode-api": "^0.0.5",
     "@mantine/core": "7.17.4",
     "@mantine/hooks": "7.17.4",
     "@mantine/notifications": "^7.17.4",
@@ -30,7 +30,11 @@
     "next": "15.2.3",
     "openai": "^4.95.1",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
