@@ -135,7 +135,7 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
 
 function SolutionPanel({ solution }: { solution: SolutionType }) {
   return (
-    <Paper p="md" withBorder style={{ height: 'auto', overflow: 'visible' }}>
+    <Paper p="md" style={{ height: 'auto', overflow: 'visible' }}>
       <Title order={3} size="h4" mb="md">
         Explanation
       </Title>
