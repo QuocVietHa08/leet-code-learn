@@ -45,8 +45,22 @@ export function LandingPage() {
       return;
     }
 
-    // Get the problem name and remove any trailing slashes or query parameters
-    const problemName = problemUrlParts[1].split('/')[0].split('?')[0];
+    // Extract the problem name from the URL path
+    // Handle URLs like 'leetcode.com/problems/daily-temperatures/description/?envType=study-plan-v2&envId=leetcode-75'
+    const urlPath = problemUrlParts[1];
+    
+    // First, get the problem segment (daily-temperatures in the example)
+    const problemSegments = urlPath.split('/');
+    const problemName = problemSegments[0];
+    
+    if (!problemName) {
+      notifications.show({
+        title: 'Invalid LeetCode URL',
+        message: 'Could not extract problem name from the URL',
+        color: 'red',
+      });
+      return;
+    }
     
     // Navigate to the solve page with the problem name
     router.push(`/problems/${problemName}`)

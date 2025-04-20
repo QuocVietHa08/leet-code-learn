@@ -22,6 +22,7 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
     return (
       <Paper
         p="md"
+        radius="md"
         withBorder
         w="100%"
         h="100%"
@@ -37,7 +38,7 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
           </Tabs.List>
           <div style={{ flexGrow: 1, overflow: 'auto', marginTop: '16px' }}>
             <Tabs.Panel value="bruteForce" pt="md">
-              <Paper p="md" withBorder>
+              <Paper p="md">
                 <Title order={3} size="h4" mb="md">
                   Explanation
                 </Title>
@@ -95,7 +96,7 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
 
   if (!solution) {
     return (
-      <Paper p="md" withBorder>
+      <Paper p="md" withBorder radius="md">
         <Text ta="center" c="dimmed">
           Failed to generate solution. Please try again.
         </Text>
@@ -106,6 +107,7 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
   return (
     <Paper
       p="md"
+      radius="md"
       withBorder
       h="100%"
       style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
@@ -135,29 +137,27 @@ export function SolutionDisplay({ loading, solution }: SolutionDisplayProps) {
 
 function SolutionPanel({ solution }: { solution: SolutionType }) {
   return (
-    <Paper p="md" style={{ height: 'auto', overflow: 'visible' }}>
-      <Title order={3} size="h4" mb="md">
+    <Paper p="md" style={{ height: 'auto', overflow: 'visible' }} className="dark:bg-gray-800 dark:border-gray-700">
+      <Title order={3} size="h4" mb="md" className="dark:text-gray-100">
         Explanation
       </Title>
-      <Text mb="lg" style={{ whiteSpace: 'pre-line' }}>
-        {solution.explanation}
-      </Text>
+      <Text mb="xl" className="dark:text-gray-300">{solution.explanation}</Text>
 
-      <Title order={3} size="h4" mb="md">
+      <Title order={3} size="h4" mb="md" className="dark:text-gray-100">
         Solution
       </Title>
-      <Code block mb="lg">
+      <Code block mb="xl" className="dark:bg-gray-900 dark:text-gray-100">
         {solution.code}
       </Code>
 
-      <Title order={3} size="h4" mb="md">
+      <Title order={3} size="h4" mb="md" className="dark:text-gray-100">
         Complexity
       </Title>
-      <Text mb="xs">
-        <strong>Time Complexity:</strong> {solution.timeComplexity}
+      <Text mb="xs" className="dark:text-gray-300">
+        <strong className="dark:text-gray-100">Time Complexity:</strong> {solution.timeComplexity}
       </Text>
-      <Text>
-        <strong>Space Complexity:</strong> {solution.spaceComplexity}
+      <Text className="dark:text-gray-300">
+        <strong className="dark:text-gray-100">Space Complexity:</strong> {solution.spaceComplexity}
       </Text>
     </Paper>
   );
