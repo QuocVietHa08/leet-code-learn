@@ -19,7 +19,7 @@ type ProblemDescriptionProps = {
 
 export function ProblemDescription({ loading, problemData }: ProblemDescriptionProps) {
   return (
-    <Paper p="md" withBorder mih="calc(100vh - 4rem)">
+    <Paper p="md" withBorder h="100%"  className="overflow-auto rounded-md">
       {loading ? (
         <>
           <Skeleton height={30} width="70%" radius="xl" mb="md" />

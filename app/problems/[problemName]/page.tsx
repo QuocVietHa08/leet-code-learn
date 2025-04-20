@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Container, Grid } from '@mantine/core';
+import {  Flex} from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ProblemDescription } from '@/app/components/ProblemDescription';
 import { SolutionDisplay } from '@/app/components/SolutionDisplay';
@@ -120,19 +120,18 @@ export default function SolvePage() {
     }
   }, [problemName, formattedProblemName]);
 
-  console.log('Problem data:', problemData)
 
   return (
-    <Container size="xl" py="xl" fluid mih="100vh">
-      <Grid gutter="md">
-        <Grid.Col w="50%" span={{ base: 12, md: 5 }} mih="calc(100vh - 4rem)">
+    <Flex w="100vw" h="100vh" className="overflow-auto">
+      <Flex w="100%" p="md" gap="xs" className="overflow-auto" h="100%">
+        <Flex miw="50%" className="overflow-auto rounded-xl h-[100%]">
           <ProblemDescription loading={problemLoading} problemData={problemData} />
-        </Grid.Col>
+        </Flex>
 
-        <Grid.Col w="50%" span={{ base: 12, md: 7 }} mih="calc(100vh - 4rem)">
+        <Flex miw="50%" className="overflow-auto rounded-xl h-[100%]">
           <SolutionDisplay loading={loading} solution={solution} />
-        </Grid.Col>
-      </Grid>
-    </Container>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }

@@ -49,7 +49,7 @@ export function LandingPage() {
     const problemName = problemUrlParts[1].split('/')[0].split('?')[0];
     
     // Navigate to the solve page with the problem name
-    router.push(`/solve/${problemName}`)
+    router.push(`/problems/${problemName}`)
   };
   return (
     <>
@@ -60,14 +60,13 @@ export function LandingPage() {
               <Title className="font-extrabold text-4xl tracking-tight mb-2.5 text-black dark:text-white leading-tight text-center sm:text-2xl sm:text-left">
                 Solve Coding Problems with AI Assistance
               </Title>
-              <Text
-                className="text-black dark:text-white text-center max-w-[600px] mx-auto sm:text-left sm:text-md"
-                mt={30}
+              <div
+                className="mt-5 text-black dark:text-white text-center max-w-[600px] mx-auto sm:text-left sm:text-md"
               >
                 Paste your LeetCode problem link and get instant solutions, explanations, and
                 learning resources. Master algorithms and ace your technical interviews with
                 LeetCode Learn.
-              </Text>
+              </div>
 
               <Group align="center" justify="center">
                 <Container w="100%" size="lg" py="xl" className="py-20">
@@ -105,10 +104,10 @@ export function LandingPage() {
           Master LeetCode Problems Effortlessly
         </Title>
 
-        <Text c="dimmed" className="max-w-[600px] mx-auto text-center" ta="center" mt="md">
+        <div className="max-w-[600px] mx-auto text-center mt-2" >
           Stop struggling with difficult coding problems. Our platform helps you understand and
           solve them quickly.
-        </Text>
+        </div>
 
         <SimpleGrid cols={{ base: 1, md: 4 }} spacing="xl" mt={50}>
           <FeatureCard
